@@ -75,7 +75,24 @@ def build(root=ROOT):
             page = page.replace(placeholder, markup if on_coolcode else "")
         if re.search(r"\{\{[A-Z_]+\}\}", page):
             raise ValueError("Unresolved template placeholder in web/index.html")
-        page = add_search_metadata(page, tool)
+        snapshot = json.loads((web / "data/catalogue.json").read_text(encoding="utf-8"))
+        if snapshot.get("schema") != "screenplaces.v1" or not isinstance(snapshot.get("records"), list) or not snapshot["records"]:
+            raise ValueError("A valid nonempty filming-location capture is required")
+        if not snapshot.get("fetched_at"):
+            raise ValueError("The capture must retain its retrieval timestamp")
+        regions = snapshot.get("regions", [])
+        summary = ". ".join(f'{r["name"]}: {r["productions"]} productions' for r in regions)
+        page = page.replace('<p id="coverage"></p>', '<p id="coverage">' + escape(summary + '. Captured ' + snapshot["fetched_at"] + '.') + '</p>')
+        datasets = []
+        if on_coolcode:
+            datasets.append({"@type":"Dataset", "@id":f'https://coolcode.ca/{slug}/#locations',
+                "name": "Documented filming-location capture", "description": f'{len(snapshot["records"])} production-location statements from Wikidata; captured {snapshot["fetched_at"]}. Coverage is incomplete.',
+                "license":"https://creativecommons.org/publicdomain/zero/1.0/",
+                "creator":{"@type":"Organization","name":"Wikidata contributors","url":"https://www.wikidata.org/"},
+                "isBasedOn":"https://www.wikidata.org/wiki/Property:P915",
+                "spatialCoverage":[{"@type":"Place","name":r["name"]} for r in regions],
+                "distribution":{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":f'https://coolcode.ca/{slug}/data/catalogue.json'}})
+        page = add_search_metadata(page, tool, category="EntertainmentApplication", datasets=datasets)
         index.write_text(page, encoding="utf-8")
         (stage / ".nojekyll").touch()
         if output.exists():

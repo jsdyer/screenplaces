@@ -4,24 +4,36 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      refresh:
+        description: Refresh the Wikidata location catalogue before publishing
+        type: boolean
+        default: false
+  schedule:
+    - cron: '30 9 * * 4'
 permissions:
   contents: read
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
+    permissions:
+      contents: write
     outputs:
       publish: ${{ steps.identity.outputs.publish }}
     steps:
       - uses: actions/checkout@v7
         with:
-          persist-credentials: false
+          persist-credentials: true
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
       - uses: actions/setup-node@v6
         with:
           node-version: '24'
+      - name: Refresh documented filming locations
+        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.refresh)
+        run: python3 scripts/refresh.py
       - name: Test the application
         run: node --test tests/*.test.mjs
       - name: Test the builder
@@ -53,6 +65,16 @@ jobs:
           name: browser-checks
           path: browser-checks/
           retention-days: 7
+      - name: Commit validated source capture
+        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.refresh)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add web/data/catalogue.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Refresh documented filming-location capture"
+            git push
+          fi
       - name: Save reviewable site
         uses: actions/upload-artifact@v7
         with:

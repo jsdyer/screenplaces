@@ -1,34 +1,205 @@
 <!doctype html>
 <html lang="en-CA">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="{{DESCRIPTION}}">
-  <title>{{TITLE}} · CoolCode</title>
-  <link rel="stylesheet" href="./style.css">
-  <script type="module" src="./app.mjs"></script>
-  {{VISIT_COUNTER}}
-</head>
-<body data-tool-id="{{TOOL_ID}}">
-  <a class="skip" href="#main">Skip to content</a>
-  <header><a href="https://coolcode.ca/">← CoolCode.ca</a><a href="{{SOURCE_URL}}">Source &amp; instructions ↗</a></header>
-  <main id="main">
-    <p class="eyebrow">Browser tool starter</p>
-    <h1>{{TITLE}}</h1>
-    <p class="intro">{{DESCRIPTION}}</p>
-    <section aria-labelledby="example-title">
-      <h2 id="example-title">Clean a list</h2>
-      <p>Trim spaces, skip blank lines and remove exact duplicates. Capitalization stays distinct.</p>
-      <div class="panels">
-        <div><label for="input">Your lines</label><textarea id="input" rows="10" maxlength="100000" spellcheck="false" placeholder="Paste one item per line"></textarea></div>
-        <div><label for="output">Cleaned lines</label><textarea id="output" rows="10" readonly spellcheck="false"></textarea></div>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description" content="{{DESCRIPTION}}" />
+    <title>
+      Film and TV Filming Locations in Vancouver and Halifax · CoolCode
+    </title>
+    <link rel="stylesheet" href="./vendor/leaflet.css" />
+    <link rel="stylesheet" href="./style.css" />
+    <script defer src="./vendor/leaflet.js"></script>
+    <script type="module" src="./app.mjs"></script>
+    {{VISIT_COUNTER}}
+  </head>
+  <body data-tool-id="{{TOOL_ID}}">
+    <a class="skip" href="#main">Skip to content</a>
+    <header>
+      <a href="https://coolcode.ca/">CoolCode.ca</a
+      ><a href="{{SOURCE_URL}}">Source &amp; guide</a>
+    </header>
+    <main id="main">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">A different way to look at a familiar place</p>
+          <h1>{{TITLE}}</h1>
+          <p class="intro">
+            Discover film and television locations around Vancouver and Halifax.
+            Follow the evidence from a production to a city, a neighbourhood or
+            a recorded venue.
+          </p>
+        </div>
+        <div class="hero-note">
+          The location matters.<br />So does the precision.
+        </div>
+      </section>
+      <section class="controls" aria-label="Explore filming locations">
+        <div class="toolbar">
+          <label>Collection<select id="region"></select></label
+          ><label class="filter"
+            >Find a production or place<input
+              id="query"
+              type="search"
+              placeholder="The X-Files, Surrey, a venue…"
+          /></label>
+        </div>
+        <div class="toolbar">
+          <label
+            >Location precision<select id="precision">
+              <option value="">All recorded locations</option>
+              <option value="venue">Recorded venues / sites</option>
+              <option value="city">City-level only</option>
+              <option value="area">Area-level only</option>
+              <option value="unclassified">Unclassified precision</option>
+            </select></label
+          ><label
+            >Production<select id="type">
+              <option value="">All types</option>
+              <option value="movie">Films</option>
+              <option value="tv">Television</option>
+              <option value="unknown">Type not identified</option>
+            </select></label
+          ><label
+            >Release decade<select id="decade">
+              <option value="">All years</option>
+            </select></label
+          ><button id="reset" class="secondary">Reset filters</button>
+        </div>
+        <details>
+          <summary>Explore another place with Wikidata</summary>
+          <p class="muted">
+            Search a city, neighbourhood or venue. Live queries find productions
+            recorded against that exact Wikidata place; they do not
+            automatically include its surrounding region.
+          </p>
+          <form id="place-form" class="inline">
+            <input
+              id="place-query"
+              aria-label="Search another filming place"
+              placeholder="Victoria, Lunenburg, a stadium…"
+              maxlength="150"
+              required
+            /><button>Find place</button>
+          </form>
+          <div id="place-options" class="place-options"></div>
+        </details>
+      </section>
+      <p id="status" role="status" aria-live="polite">
+        Loading documented locations…
+      </p>
+      <div class="metrics">
+        <div>
+          <strong id="production-count">—</strong
+          ><span>productions in view</span>
+        </div>
+        <div>
+          <strong id="place-count">—</strong><span>recorded places</span>
+        </div>
+        <div>
+          <strong id="venue-count">—</strong><span>venue / site records</span>
+        </div>
       </div>
-      <div class="actions"><button id="sample" type="button">Load example</button><button id="clear" type="button">Clear</button><button id="copy" type="button" hidden>Copy result</button></div>
-      <p id="status" role="status" aria-live="polite">Paste a list to begin.</p>
-      <noscript><p>This tool needs JavaScript to process your text. The source is available above.</p></noscript>
-    </section>
-    <aside aria-label="Privacy"><strong>Stays on your device.</strong> The browser processes your text in this tab. Reloading clears it.</aside>
-  </main>
-  <footer>Part of <a href="https://coolcode.ca/">the CoolCode collection</a>. {{ISSUE_LINK}}</footer>
-</body>
+      <div class="workspace">
+        <section>
+          <div class="section-heading">
+            <h2>Explore the catalogue</h2>
+            <span id="count" class="badge"></span>
+          </div>
+          <p id="place-filter" class="muted" hidden></p>
+          <div id="results" class="cards"></div>
+          <button id="more" class="secondary more" hidden>
+            Show more productions
+          </button>
+        </section>
+        <aside class="map-column">
+          <div id="map" role="region" aria-label="Filming-location map"></div>
+          <div class="legend">
+            <span class="key venue"></span>Recorded venue/site
+            <span class="key broad"></span>City, area or unclassified point
+          </div>
+          <p class="muted">
+            City and area markers are reference points. A venue marker
+            identifies the recorded site, not a scene’s exact camera position or
+            permission to visit.
+          </p>
+          <section class="saved-panel">
+            <div class="section-heading">
+              <h2>Your location outing</h2>
+              <span id="saved-count" class="badge">0</span>
+            </div>
+            <p class="muted">
+              Saved in this browser. Use venue records to plan stops; city-level
+              entries are research leads.
+            </p>
+            <ol id="saved-list"></ol>
+            <div class="inline">
+              <button id="export" class="secondary">Export outing</button
+              ><button id="clear" class="quiet">Clear saved</button>
+            </div>
+          </section>
+        </aside>
+      </div>
+      <section class="notes">
+        <h2>What these records mean</h2>
+        <p>
+          Wikidata’s
+          <a href="https://www.wikidata.org/wiki/Property:P915"
+            >filming location property</a
+          >
+          describes where a production was shot. It is different from where its
+          story takes place. Coverage is uneven: a missing film is not evidence
+          it was never filmed here, and many records identify only a
+          municipality. Follow the linked statement to inspect its references.
+        </p>
+        <p id="coverage"></p>
+        <p>
+          <strong>Release years</strong> use the earliest release date listed in
+          Wikidata and may be missing. Film/television labels use available TMDb
+          identifier properties. These fields are discovery aids, not a complete
+          filmography. Recorded campuses, parks and studios may cover
+          substantial areas or be closed to the public.
+        </p>
+        <p>
+          <strong>Privacy:</strong> filtering the downloaded catalogue stays in
+          your browser. Searching another place sends that text to Wikidata;
+          choosing it sends a Wikidata ID to its query service. Film-detail
+          requests send only a Wikidata production ID through CoolCode to TMDb.
+          Map tiles contact OpenStreetMap; posters contact TMDb. Saved outings
+          remain on this device.
+        </p>
+        <p>
+          Wikidata structured data:
+          <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0</a>.
+          Map ©
+          <a href="https://www.openstreetmap.org/copyright"
+            >OpenStreetMap contributors</a
+          >.
+        </p>
+        <div class="tmdb-credit">
+          <a href="https://www.themoviedb.org/"
+            ><img src="./vendor/tmdb.svg" width="100" height="44" alt="TMDB"
+          /></a>
+          <p>
+            This product uses the TMDB API but is not endorsed or certified by
+            TMDB.
+          </p>
+        </div>
+      </section>
+      <noscript
+        >This tool needs JavaScript. Download the
+        <a href="./data/catalogue.json"
+          >documented filming-location catalogue</a
+        >
+        or visit Wikidata.</noscript
+      >
+    </main>
+    <footer>
+      Part of <a href="https://coolcode.ca/">CoolCode</a>. {{ISSUE_LINK}}
+    </footer>
+    <dialog id="details">
+      <button id="close-details" class="quiet">Close</button>
+      <div id="details-content"></div>
+    </dialog>
+  </body>
 </html>

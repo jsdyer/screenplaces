@@ -28,7 +28,7 @@ class BuildTests(unittest.TestCase):
         build(self.root)
         page = (self.root / "dist/index.html").read_text()
         self.assertIn('&lt;img', page)
-        self.assertNotIn('<img', page)
+        self.assertNotIn('<img src=x onerror=', page)
         self.assertNotIn('{{', page)
         self.assertIn('href="./style.css"', page)
         self.assertFalse((self.root / "dist/private.txt").exists())

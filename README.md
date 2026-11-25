@@ -1,179 +1,69 @@
-# CoolCode browser tool template
+# Screen Places
 
-A starting point for independent tools at `coolcode.ca/<repo>/`: a working local-text
-example, responsive UI, Python standard-library build, Node tests, PR checks and Pages
-publication. No npm install is needed.
-
-## Using the example
+Explore documented filming locations around Vancouver and Halifax, distinguish city-level statements from recorded venues, and save a personal location outing. Live application: https://coolcode.ca/screenplaces/.
 
 <!-- coolcode:guide -->
-The first occurrence of each trimmed line keeps its place. Compare the output with the original text before copying the result.
+Search for a production such as The X-Files, then inspect the precision label before planning a visit. A city-level record only establishes that Wikidata associates the production with that city; choose recorded venues/sites for more specific leads and inspect each filming statement's references.
 <!-- /coolcode:guide -->
 
-For a real tool, replace this paragraph with one or two plain-text sentences
-about an example, a limit or how to interpret the results. Keep the source,
-coverage, refresh behaviour and a worked example in this README as appropriate.
-When updating a tool, revise any details its behaviour has changed and keep the
-homepage's shorter data-source sentence in `tool.json` accurate.
-The hub imports the marked note into the catalogue README.
+## What works
 
-## One-time template setup
+- Search the downloaded catalogue by production or location, filter by region, film/TV, release decade and precision.
+- Interactive map groups productions at each recorded place; select a marker to filter the list.
+- Venue/site records are distinguished from city/area reference points. Campuses, parks and studios can still cover large areas.
+- Save up to 200 production-location records locally and export a JSON outing.
+- Optional TMDb posters, overview and user rating are requested only when opening film details.
+- Explore another arbitrary Wikidata place using text search and a bounded live query. This finds statements against that exact place; it does not automatically search all its suburbs.
 
-Enable **Settings → General → Template repository** here. This repository does not
-need Pages enabled: its workflow builds/tests but intentionally skips deployment.
-New copies also skip deployment until `scripts/init.py` sets the tool ID to match
-their repository name. This lets you create the repo before configuring Pages.
+## Source and coverage
 
-## Start a new tool
+The checked-in `web/data/catalogue.json` contains real Wikidata P915 filming-location statements for the configured geographic boxes. It is not a complete database of all films or TV productions. Initial collection found substantially more Vancouver records than Halifax records; the interface derives the current counts from the capture instead of hard-coding them.
 
-1. Select **Use this template → Create a new repository**, choose owner `jsdyer`,
-   a unique lowercase name such as `my-tool`, and public visibility.
-2. Clone the new repository. Use Python 3.12+ and Node 24+.
-3. Set the identity, using a slug that matches the repository name:
+Wikidata P625 provides reference coordinates. P577 provides the earliest listed release date when available. Available P4947/P4983 identifiers distinguish movies from television; unknown types remain labelled unknown. A filming location is not the same as the fictional story setting. Some Wikidata statements have no attached references; the linked source lets readers inspect them. The snapshot time is the actual collection time, not a film release date.
 
-```sh
-python3 scripts/init.py my-tool --title "My Tool" --description "Describe what this tool does."
-```
+Data: Wikidata structured data under CC0. Map: OpenStreetMap contributors. Leaflet 1.9.4 is vendored with BSD-2-Clause licence. Optional TMDb metadata/images are attributed with its approved logo and required notice; its developer API terms apply. TMDb ratings describe the production, not the reliability of the filming-location claim.
 
-Review the category, tags and icon in `tool.json`. `access: "browser"` tells the main
-catalogue that the tool works immediately without installation. `--owner` supports a different
-GitHub owner, but only projects owned by `jsdyer` inherit the CoolCode domain.
+## Privacy and credentials
 
-4. Replace the example in `web/` and its tests. Update the privacy explanation,
-   source attribution and README to describe the real tool.
-5. Test and preview:
+Catalogue filtering happens locally. Place search goes directly to Wikidata and selecting a result queries WDQS. Map tiles go to OpenStreetMap. Film-detail requests send a production's Wikidata ID to the CoolCode Worker and TMDb; poster images load from TMDb. API credentials never enter the browser.
 
-```sh
-node --test tests/*.test.mjs
-python3 -m unittest discover -s tests -v
-python3 scripts/build.py
-python3 -m http.server 8000 --directory dist
-```
+Saved outings use `coolcode:screenplaces:saved`. Clear them in the interface to remove them. There are no user accounts or server-side saved lists. The optional gateway rate limiter uses daily salted client identifiers and discards expired counters; it does not store raw IP addresses.
 
-Open `http://localhost:8000/`. The example trims lines, skips blanks and removes exact
-duplicates, preserving first-seen order and capitalization. It processes the text in tab memory. Update that explanation if your app behaves differently.
-
-CI also tests the browser flow and mobile layout at a project subpath. Replace the
-sample assertions in `tests/browser_smoke.py` when implementing your own UI. To run
-that check locally (optional for ordinary preview):
-
-```sh
-python3 -m venv .venv
-. .venv/bin/activate
-python3 -m pip install -r tests/browser-requirements.txt
-python3 -m playwright install --with-deps chromium
-python3 tests/browser_smoke.py
-```
-
-Playwright is a test-only dependency; the app and its static build do not use it.
+The existing CoolCode Worker needs Secret `TMDB_READ_ACCESS_TOKEN` and the existing `DB` binding. `services/gateway.mjs` is the reviewed handler source; integration instructions are in `services/README.md`. The default API URL is configured in `web/config.json`. If this gateway has not been deployed, the catalogue, map, filtering, source links and saved outing still work; only optional film details display an unavailable message.
 
 ## Expand or customize
 
-Every implemented tool should replace this section with its actual configuration
-path and a working example. A small `config.json` can hold default entities,
-query presets, source choices and request limits. Those defaults should be useful
-starting points, while visitors can enter other valid inputs whenever the source
-supports them. Keep provider limits explicit and separate from the starter list.
+Edit `web/config.json`:
 
-Derive counts, filters and item validation from the current data. Do not require
-exactly the initial number of items. Add a test that expands the configuration,
-and keep historical captures readable when their coverage differs from today's
-watchlist. Display the selected capture date accurately.
+- `regions` contains a unique `id`, display `name`, reference `place_id`, map `center` as `[latitude,longitude]`, and geographic `bounds` as `[west,south,east,north]`.
+- To add another region, append a configuration entry (for example Victoria) with verified coordinates, then refresh. No source-code list length needs changing.
+- `precision` contains reviewed Wikidata place IDs grouped as `city`, `area` or `venue`. New unreviewed places are labelled `unclassified`; they are never silently called exact sites.
+- `result_limit` defaults to 2000 rows per region. The collector fails rather than silently publish a truncated result; increase this limit or narrow a bounding box after reviewing a failure.
+- `api_base` is the HTTPS origin of the Worker that implements the optional film-detail handler.
 
-Document which changes need only a normal code push and which also need a data
-refresh. Include the refresh command or exact GitHub workflow and input, followed
-by the publication step. A successful code build need not mean a new collection
-has been fetched. The starter itself has no external collection or refresh.
-
-## Publish and register
-
-When the actual tool is ready, in the **new tool repository** set **Settings → Pages → Build and deployment →
-Source → GitHub Actions**. Push to `main`, or manually run **Browser tool · Check and
-publish** after enabling Pages. If the initial deployment ran before Pages was enabled,
-enable it and rerun. PRs only check/build and provide a downloadable preview artifact.
-
-Keep `{{VISIT_COUNTER}}` in the page head and `{{ISSUE_LINK}}` in the footer when replacing the starter UI. The build enables these for initialized CoolCode repositories. The shared counter records aggregate opens on coolcode.ca by public tool ID. Toolbox inputs and URL parameters are excluded. The issue link opens a reporting form with the tool already selected.
-
-Keep app-owned asset paths and module imports relative. Check `https://coolcode.ca/my-tool/`.
-Do not add a CNAME or set `coolcode.ca` as this project's custom domain; the account
-site supplies it. Only successful `main` builds deploy.
-
-After verifying the app, copy the reviewed object from `tool.json` into `data/tools.json`
-in [the main site](https://github.com/jsdyer/jsdyer.github.io). Each tool still builds
-independently. The hub generates the visitor Worker ID list, watchdog targets and sitemap; deploy and verify the affected services before considering the release complete. Update the hub record when listing metadata changes; the hub is the
-authority for discovery. Every change must follow the [mandatory lifecycle](https://github.com/jsdyer/jsdyer.github.io/blob/main/docs/tool-lifecycle.md). App-only changes may leave integrations unchanged, but this must be checked; documentation, source fields, schedules and registration changes also require the hub update.
-
-The main site separates **Use in your browser** from **Install yourself**. An app
-that asks for a file is still a browser tool. Standalone Linux packages should start
-in their own repositories with their own build/release workflow, rather than copying
-this browser-only scaffold. Their hub record uses `access: "install"`, links to an
-installation guide, and includes `requirements`.
-
-## Files
-
-| Path | Purpose |
-| --- | --- |
-| `tool.json` | Page metadata and a ready-to-copy catalogue record |
-| `web/` | HTML, responsive CSS, DOM interactions and separate model logic |
-| `scripts/build.py` | Escape metadata and build `web/` into `dist/` |
-| `scripts/init.py` | Set a new project's identity |
-| `scripts/add_schedule_guard.py` | Add an opt-in guard for explicitly selected scheduled collectors |
-| `tests/` | Application and builder tests |
-| `.github/workflows/pages.yml` | Check PRs and publish successful main builds |
-| `AGENTS.md` | Instructions for future coding work |
-
-Namespace optional storage as `coolcode:<tool-id>:<key>`; CoolCode paths share a
-browser origin. Don't save pasted text/uploads by default. Document external APIs
-and send only the information needed for the selected action. Never embed secrets.
-
-Scheduled refresh is opt-in. Validate source data before deploying, display its date,
-and preserve the last good deployment on failure. Public-repository schedules can
-stop after 60 days without repository activity.
-
-When adding a collector with `on.schedule`, also keep `workflow_dispatch` available
-for the independent Linux server scheduler. Generate a separate schedule guard,
-listing every scheduled collector in the repository:
+Changing map defaults or the API URL needs a normal code push. Changing region coverage or precision labels needs a collection run followed by publication:
 
 ```sh
-python3 scripts/add_schedule_guard.py --repository jsdyer/my-tool .github/workflows/pages.yml
+python3 scripts/refresh.py
+node --test tests/*.test.mjs
+python3 -m unittest discover -s tests -v
+python3 scripts/build.py
 ```
 
-Replace the repository and workflow paths with the real values. Review the generated
-allowlist, commit `.github/workflows/schedule-guard.yml`, and verify its first push
-run. Re-run the command with the complete list when adding, renaming or removing a
-collector. The guard runs weekly, independently of collector failures, and calls
-GitHub's enable-workflow API for those paths and itself. It restores workflows
-disabled for inactivity and preserves manually disabled workflows. It does not
-fetch data, create dummy commits or change source/check timestamps.
+Review the snapshot diff and commit the source configuration and snapshot together. `refresh.py` collects all configured regions and release dates into memory, validates the result, then atomically replaces the snapshot. Any error preserves the previous file. Historical saved outings retain their own labels/coordinates when coverage changes.
 
-This is an interim mitigation: GitHub does not document active-workflow renewal as
-a permanent exemption, and scheduled runs can be delayed or dropped. Register the
-collector and its freshness expectations in the independent server scheduler too.
-Document its real data check, collection and publication steps in the tool README.
-The starter has no scheduled collector and therefore ships no recurring guard job.
+## Schedules and publication
 
-Templates don't propagate future edits automatically. Adopt fixes explicitly and
-consider a versioned reusable workflow once several tools confirm the shared process.
-Choose and add the intended software license before distributing a new project.
+GitHub Actions **Browser tool · Check and publish** checks every main push/PR and deploys successful main builds using Pages. Normal builds are offline. The same workflow refreshes source data each Thursday at 09:30 UTC; manually select **Run workflow → refresh: true** to refresh now. A refresh commits only the validated snapshot, tests the application, then deploys it in the same run because commits made with GITHUB_TOKEN do not start another workflow.
 
-## Search metadata
+The separate `schedule-guard.yml` allowlists this collector and itself. It is inactivity protection, not proof of source freshness. Watchdog integration should dispatch `pages.yml` with `{"refresh":true}` and probe `/screenplaces/data/catalogue.json` → `fetched_at`; a 10-day tolerance accommodates the weekly schedule. This round's shared inventory changes are coordinated by the parent integration task.
 
-Initialize the page title with a concise task phrase, while keeping the creative
-app name in `--title`:
+A failing collection does not advance `fetched_at` or deploy a replacement. Pages remains on its previous successful build. Configure Settings → Pages → GitHub Actions. The canonical path is `/screenplaces/`; no CNAME is used.
 
-```sh
-python3 scripts/init.py line-cleaner --title "Line Cleaner" --description "Trim lines and remove exact duplicates in your browser." --search-title "Trim Lines & Remove Duplicates"
-```
+## Development
 
-The build adds static `WebApplication` JSON-LD, a free CAD offer and social metadata.
-For initialized jsdyer tools it also adds the canonical CoolCode URL. Forks and the
-uninitialized template do not claim a CoolCode canonical. Review the application
-category in `scripts/build.py` when adapting the tool; the starter is a utility.
-Do not invent ratings or reviews. Search markup does not guarantee a rich result.
+Python 3.12+ and Node 24+; no frontend package installation. `dist/` is generated and ignored. The Node tests cover filters, live-query boundaries, persistence and the gateway. Python tests cover the builder, source normalization and scheduled workflow guard. `tests/browser_smoke.py` runs in CI with mocked external requests to exercise filters, map data, film details, persistence and mobile layout.
 
-For a saved public dataset, pass Dataset objects to `add_search_metadata` from the
-app builder, with actual source attribution, licence, coverage and download URLs.
-Derive counts and dates from the same snapshot used by the app and show those details
-on the page. Keep source edition, retrieval and page-build time distinct. Omit an
-unknown source modification date instead of setting it to the current build time.
-Read the hub's `docs/search-discovery.md` for the release checklist.
+## Integration scope
+
+This implementation only changes the new Screen Places repository. `tool.json` is ready for catalogue import. The shared Worker module needs the reviewed handler inserted and deployed, while hub/README/sitemap/watchdog registration is tracked by the release owner.

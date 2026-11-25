@@ -1,0 +1,13 @@
+{
+  "api_base": "https://coolcode-visitor-api.jeffdyer.workers.dev",
+  "result_limit": 2000,
+  "regions": [
+    {"id":"vancouver","name":"Vancouver & Lower Mainland","place_id":"Q24639","center":[49.2608,-123.1139],"bounds":[-123.4,49.0,-122.4,49.6]},
+    {"id":"halifax","name":"Halifax & nearby","place_id":"Q2141","center":[44.6476,-63.5727],"bounds":[-63.85,44.3,-63.3,44.9]}
+  ],
+  "precision": {
+    "city": ["Q24639","Q2141","Q643215","Q244025","Q390583","Q16740","Q923243","Q236837","Q643326","Q851838","Q876122","Q629056"],
+    "area": ["Q1061069","Q905710","Q2832285","Q6709272","Q1495636"],
+    "venue": ["Q391028","Q201603","Q44927724","Q9293120","Q7269642","Q14874673","Q7698833","Q125942347","Q832644","Q1126258","Q820905","Q976408"]
+  }
+}

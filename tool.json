@@ -1,16 +1,23 @@
 {
-  "id": "coolcode-tool-template",
-  "title": "CoolCode Tool Starter",
-  "description": "A browser-only example that trims lines and removes exact duplicates.",
-  "category": "security",
-  "tags": ["text", "lines", "duplicates"],
-  "icon": "scan-search",
-  "url": "/coolcode-tool-template/",
-  "source": "https://github.com/jsdyer/coolcode-tool-template",
+  "id": "screenplaces",
+  "title": "Screen Places",
+  "description": "Find documented film and television locations, compare location precision and save a filming-location outing.",
+  "category": "media",
+  "tags": [
+    "film",
+    "television",
+    "filming locations",
+    "Vancouver",
+    "Halifax",
+    "Wikidata"
+  ],
+  "icon": "film",
+  "url": "/screenplaces/",
+  "source": "https://github.com/jsdyer/screenplaces",
   "hosting": "project",
   "access": "browser",
   "data_info": {
-    "mode": "local",
-    "detail": "The browser reads the text you paste and compares its lines."
+    "mode": "mixed",
+    "detail": "Weekly Wikidata filming-location captures, with optional live TMDb title details and direct place queries."
   }
 }
