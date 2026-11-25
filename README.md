@@ -4,6 +4,7 @@ Explore documented filming locations across Canadian regions, starting with Vanc
 
 <!-- coolcode:guide -->
 Search for a production such as The X-Files, then inspect the precision label before planning a visit. A city-level record only establishes that Wikidata associates the production with that city; choose recorded venues/sites for more specific leads and inspect each filming statement's references.
+Use **Pictures of this place** on a result to open Commons Lens with that record’s coordinates prefilled. Commons Lens waits for you to submit before requesting media.
 <!-- /coolcode:guide -->
 
 ## What works

@@ -17,6 +17,7 @@ def main():
     page.route('https://tile.openstreetmap.org/**',lambda r:r.abort())
     page.route('https://coolcode-visitor-api.jeffdyer.workers.dev/api/screenplaces/**',lambda r:r.fulfill(content_type='application/json',headers={'access-control-allow-origin':'*'},body=json.dumps({'fetched_at':'2026-11-25T00:00:00Z','data':{'title':'The X-Files','overview':'Film details test response','rating':8.4,'rating_count':100,'tmdb_url':'https://www.themoviedb.org/tv/4087'}})))
     page.goto(f'http://127.0.0.1:{server.server_port}/screenplaces/');page.locator('.card').first.wait_for();assert page.locator('.card').count()>1
+    pictures=page.get_by_role('link',name='Pictures of this place').first.get_attribute('href');assert pictures.startswith('https://coolcode.ca/commonslens/?lat=') and '&lon=' in pictures
     page.locator('#query').fill('The X-Files');assert page.locator('.card').count()>=1
     page.locator('.card button',has_text='Save location').first.click();assert page.locator('#saved-list li').count()==1
     page.reload();page.locator('.card').first.wait_for();assert page.locator('#saved-list li').count()==1

@@ -254,7 +254,7 @@ function render() {
       });
       persist();
     };
-    actions.append(map, details, save, link("Filming statement", r.source_url));
+    actions.append(map, details, save, link("Filming statement", r.source_url), link("Pictures of this place", "https://coolcode.ca/commonslens/?" + new URLSearchParams({lat:r.lat,lon:r.lon})));
     card.append(actions);
     target.append(card);
   }
