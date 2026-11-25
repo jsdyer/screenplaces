@@ -17,8 +17,21 @@ class RefreshTests(unittest.TestCase):
   with patch.object(m,'release_years',return_value={'Q2744':1993}):data=m.collect(config,cached)
   self.assertEqual(len(data['regions']),2);self.assertEqual(data['records'][1]['year'],1993)
  def test_missing_empty_truncated_inputs_rejected(self):
-  for value in [{},{'results':{'bindings':[]}}, {'results':{'bindings':[self.row]*2000}}]:
+  for value in [{},{'results':{'bindings':[]}}, {'results':{'bindings':[self.row]*self.config['result_limit']}}]:
    with self.assertRaises(ValueError):m.collect({**self.config,'regions':[self.region]},{self.region['id']:value})
+ def test_explicit_empty_region_is_preserved_with_zero_coverage(self):
+  region={**self.region,'allow_empty':True};config={**self.config,'regions':[region]}
+  with patch.object(m,'release_years',return_value={}):data=m.collect(config,{region['id']:{'results':{'bindings':[]}}})
+  self.assertEqual(data['regions'][0]['records'],0)
+ def test_partitioned_publication_preserves_manifest_on_write_failure(self):
+  row=m.normalize([self.row],self.region,self.config)[0]
+  snapshot={'schema':'screenplaces.v1','fetched_at':'2026-11-25T00:00:00Z','regions':[{**self.region,'records':1,'productions':1,'places':1}],'records':[row]}
+  with tempfile.TemporaryDirectory()as tmp:
+   web=Path(tmp);manifest=m.publish_partitioned(snapshot,web);before=(web/'data/catalogue.json').read_bytes();file=web/manifest['regions'][0]['records_url'][2:];self.assertTrue(file.exists())
+   newer={**snapshot,'fetched_at':'2026-11-26T00:00:00Z'}
+   with patch.object(Path,'write_bytes',side_effect=OSError('disk full')):
+    with self.assertRaises(OSError):m.publish_partitioned(newer,web)
+   self.assertEqual((web/'data/catalogue.json').read_bytes(),before);self.assertTrue(file.exists())
  def test_bounds_validated(self):
   with self.assertRaises(ValueError):m.query_region({**self.region,'bounds':[-180,0,181,10]},100)
 if __name__=='__main__':unittest.main()

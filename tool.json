@@ -1,12 +1,13 @@
 {
   "id": "screenplaces",
   "title": "Screen Places",
-  "description": "Find documented film and television locations, compare location precision and save a filming-location outing.",
+  "description": "Explore documented film and television locations across Canadian regions, compare location precision and save an outing.",
   "category": "media",
   "tags": [
     "film",
     "television",
     "filming locations",
+    "Canada",
     "Vancouver",
     "Halifax",
     "Wikidata"
@@ -18,6 +19,6 @@
   "access": "browser",
   "data_info": {
     "mode": "mixed",
-    "detail": "Weekly Wikidata filming-location captures, with optional live TMDb title details and direct place queries."
+    "detail": "Weekly regional Wikidata filming-location captures across Canada, with optional live TMDb details."
   }
 }

@@ -8,6 +8,7 @@ import {
   readSaved,
   safeApiBase,
   validateCatalogue,
+  validateRegion,
 } from "../web/model.mjs";
 const rows = [
   {
@@ -99,4 +100,53 @@ test("snapshot validation accepts new region, preserves source date and rejects 
     validateCatalogue({ ...d, records: [{ ...rows[0], lat: 99 }] }),
   );
   assert.throws(() => safeApiBase("http://example.test"));
+});
+
+test("partitioned manifests allow honest empty regions and require consistent file counts", () => {
+  const region = {
+    id: "truro",
+    records: 0,
+    productions: 0,
+    places: 0,
+    records_url: "./data/regions/truro-aabbcc.json",
+  };
+  const m = {
+    schema: "screenplaces.v2",
+    fetched_at: "2026-11-25T00:00:00Z",
+    total_records: 0,
+    regions: [region],
+  };
+  assert.equal(validateCatalogue(m).regions.length, 1);
+  assert.deepEqual(
+    validateRegion(
+      {
+        schema: "screenplaces.region.v1",
+        fetched_at: m.fetched_at,
+        region: "truro",
+        records: [],
+      },
+      region,
+      m,
+    ),
+    [],
+  );
+  assert.throws(() => validateCatalogue({ ...m, total_records: 1 }));
+  assert.throws(() =>
+    validateCatalogue({
+      ...m,
+      regions: [{ ...region, records_url: "https://other.test/data.json" }],
+    }),
+  );
+  assert.throws(() =>
+    validateRegion(
+      {
+        schema: "screenplaces.region.v1",
+        fetched_at: "2020-01-01T00:00:00Z",
+        region: "truro",
+        records: [],
+      },
+      region,
+      m,
+    ),
+  );
 });

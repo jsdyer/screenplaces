@@ -1,13 +1,497 @@
 {
   "api_base": "https://coolcode-visitor-api.jeffdyer.workers.dev",
-  "result_limit": 2000,
+  "result_limit": 4000,
   "regions": [
-    {"id":"vancouver","name":"Vancouver & Lower Mainland","place_id":"Q24639","center":[49.2608,-123.1139],"bounds":[-123.4,49.0,-122.4,49.6]},
-    {"id":"halifax","name":"Halifax & nearby","place_id":"Q2141","center":[44.6476,-63.5727],"bounds":[-63.85,44.3,-63.3,44.9]}
+    {
+      "id": "vancouver",
+      "name": "Vancouver & Lower Mainland",
+      "place_id": "Q24639",
+      "center": [
+        49.2608,
+        -123.1139
+      ],
+      "bounds": [
+        -123.4,
+        49.0,
+        -122.4,
+        49.6
+      ],
+      "group": "British Columbia"
+    },
+    {
+      "id": "victoria",
+      "name": "Victoria & southern Vancouver Island",
+      "place_id": "Q2132",
+      "center": [
+        48.42833333,
+        -123.36472222
+      ],
+      "bounds": [
+        -123.8,
+        48.25,
+        -123.15,
+        48.7
+      ],
+      "group": "British Columbia"
+    },
+    {
+      "id": "nanaimo",
+      "name": "Nanaimo & central Vancouver Island",
+      "place_id": "Q16461",
+      "center": [
+        49.16416667,
+        -123.93638889
+      ],
+      "bounds": [
+        -124.25,
+        49.0,
+        -123.65,
+        49.5
+      ],
+      "group": "British Columbia"
+    },
+    {
+      "id": "sea-to-sky",
+      "name": "Squamish & Whistler",
+      "place_id": "Q203122",
+      "center": [
+        50.11666667,
+        -122.95416667
+      ],
+      "bounds": [
+        -123.45,
+        49.6,
+        -122.7,
+        50.3
+      ],
+      "group": "British Columbia"
+    },
+    {
+      "id": "okanagan",
+      "name": "Kelowna & central Okanagan",
+      "place_id": "Q232226",
+      "center": [
+        49.88805556,
+        -119.49555556
+      ],
+      "bounds": [
+        -120.0,
+        49.4,
+        -119.0,
+        50.3
+      ],
+      "group": "British Columbia"
+    },
+    {
+      "id": "halifax",
+      "name": "Halifax & nearby",
+      "place_id": "Q2141",
+      "center": [
+        44.6476,
+        -63.5727
+      ],
+      "bounds": [
+        -63.85,
+        44.3,
+        -63.3,
+        44.9
+      ],
+      "group": "Nova Scotia"
+    },
+    {
+      "id": "south-shore",
+      "name": "Lunenburg & South Shore",
+      "place_id": "Q105441",
+      "center": [
+        44.3778,
+        -64.3094
+      ],
+      "bounds": [
+        -64.8,
+        44.0,
+        -63.9,
+        44.7
+      ],
+      "group": "Nova Scotia"
+    },
+    {
+      "id": "truro",
+      "name": "Truro & central Nova Scotia",
+      "place_id": "Q283064",
+      "center": [
+        45.36472222,
+        -63.28
+      ],
+      "bounds": [
+        -63.6,
+        45.1,
+        -63.0,
+        45.7
+      ],
+      "group": "Nova Scotia",
+      "allow_empty": true
+    },
+    {
+      "id": "cape-breton",
+      "name": "Sydney & Cape Breton",
+      "place_id": "Q932261",
+      "center": [
+        46.13638889,
+        -60.19555556
+      ],
+      "bounds": [
+        -61.5,
+        45.5,
+        -59.7,
+        47.1
+      ],
+      "group": "Nova Scotia"
+    },
+    {
+      "id": "pei",
+      "name": "Charlottetown & Prince Edward Island",
+      "place_id": "Q2127",
+      "center": [
+        46.23527778,
+        -63.12666667
+      ],
+      "bounds": [
+        -64.5,
+        45.9,
+        -61.9,
+        47.1
+      ],
+      "group": "Other Atlantic Canada",
+      "allow_empty": true
+    },
+    {
+      "id": "saint-john",
+      "name": "Saint John & Fundy coast",
+      "place_id": "Q203403",
+      "center": [
+        45.28055556,
+        -66.07611111
+      ],
+      "bounds": [
+        -67.0,
+        45.0,
+        -65.7,
+        45.6
+      ],
+      "group": "Other Atlantic Canada"
+    },
+    {
+      "id": "fredericton",
+      "name": "Fredericton & nearby",
+      "place_id": "Q2138",
+      "center": [
+        45.94527778,
+        -66.66666667
+      ],
+      "bounds": [
+        -67.0,
+        45.7,
+        -66.2,
+        46.2
+      ],
+      "group": "Other Atlantic Canada",
+      "allow_empty": true
+    },
+    {
+      "id": "st-johns",
+      "name": "St. John’s & Avalon Peninsula",
+      "place_id": "Q2082",
+      "center": [
+        47.5614,
+        -52.7119
+      ],
+      "bounds": [
+        -53.8,
+        46.6,
+        -52.4,
+        48.0
+      ],
+      "group": "Other Atlantic Canada"
+    },
+    {
+      "id": "toronto",
+      "name": "Toronto & surrounding area",
+      "place_id": "Q172",
+      "center": [
+        43.6525,
+        -79.38166667
+      ],
+      "bounds": [
+        -80.1,
+        43.4,
+        -78.8,
+        44.1
+      ],
+      "group": "Ontario & Quebec"
+    },
+    {
+      "id": "montreal",
+      "name": "Montréal & surrounding area",
+      "place_id": "Q340",
+      "center": [
+        45.50888889,
+        -73.55416667
+      ],
+      "bounds": [
+        -74.0,
+        45.3,
+        -73.3,
+        45.8
+      ],
+      "group": "Ontario & Quebec"
+    },
+    {
+      "id": "quebec-city",
+      "name": "Québec City & nearby",
+      "place_id": "Q2145",
+      "center": [
+        46.81388889,
+        -71.20805556
+      ],
+      "bounds": [
+        -71.5,
+        46.6,
+        -70.9,
+        47.1
+      ],
+      "group": "Ontario & Quebec"
+    },
+    {
+      "id": "ottawa",
+      "name": "Ottawa–Gatineau",
+      "place_id": "Q1930",
+      "center": [
+        45.42472222,
+        -75.695
+      ],
+      "bounds": [
+        -76.1,
+        45.1,
+        -75.3,
+        45.7
+      ],
+      "group": "Ontario & Quebec"
+    },
+    {
+      "id": "winnipeg",
+      "name": "Winnipeg & nearby",
+      "place_id": "Q2135",
+      "center": [
+        49.89555556,
+        -97.13861111
+      ],
+      "bounds": [
+        -97.4,
+        49.7,
+        -96.8,
+        50.1
+      ],
+      "group": "Prairies"
+    },
+    {
+      "id": "calgary",
+      "name": "Calgary & nearby",
+      "place_id": "Q36312",
+      "center": [
+        51.0475,
+        -114.0625
+      ],
+      "bounds": [
+        -114.4,
+        50.8,
+        -113.8,
+        51.3
+      ],
+      "group": "Prairies"
+    },
+    {
+      "id": "edmonton",
+      "name": "Edmonton & nearby",
+      "place_id": "Q2096",
+      "center": [
+        53.53444444,
+        -113.49027778
+      ],
+      "bounds": [
+        -113.8,
+        53.3,
+        -113.2,
+        53.8
+      ],
+      "group": "Prairies"
+    }
   ],
   "precision": {
-    "city": ["Q24639","Q2141","Q643215","Q244025","Q390583","Q16740","Q923243","Q236837","Q643326","Q851838","Q876122","Q629056"],
-    "area": ["Q1061069","Q905710","Q2832285","Q6709272","Q1495636"],
-    "venue": ["Q391028","Q201603","Q44927724","Q9293120","Q7269642","Q14874673","Q7698833","Q125942347","Q832644","Q1126258","Q820905","Q976408"]
+    "city": [
+      "Q1001626",
+      "Q105441",
+      "Q1070656",
+      "Q1342280",
+      "Q139398",
+      "Q139437",
+      "Q141406",
+      "Q141505",
+      "Q141522",
+      "Q141724",
+      "Q141810",
+      "Q141924",
+      "Q142092",
+      "Q142196",
+      "Q16461",
+      "Q16740",
+      "Q172",
+      "Q1930",
+      "Q1950648",
+      "Q203122",
+      "Q203403",
+      "Q2082",
+      "Q2096",
+      "Q2127",
+      "Q2132",
+      "Q2135",
+      "Q2138",
+      "Q2141",
+      "Q2145",
+      "Q232226",
+      "Q236837",
+      "Q244025",
+      "Q24639",
+      "Q283064",
+      "Q3263622",
+      "Q340",
+      "Q36312",
+      "Q386338",
+      "Q386626",
+      "Q390583",
+      "Q425057",
+      "Q44198",
+      "Q497373",
+      "Q50816",
+      "Q52998",
+      "Q629056",
+      "Q643215",
+      "Q643326",
+      "Q851838",
+      "Q876122",
+      "Q923243",
+      "Q932261",
+      "Q939127",
+      "Q985671"
+    ],
+    "area": [
+      "Q1014394",
+      "Q1020159",
+      "Q1025401",
+      "Q1061069",
+      "Q128172",
+      "Q1474128",
+      "Q1495636",
+      "Q1506857",
+      "Q1659468",
+      "Q17109097",
+      "Q1812222",
+      "Q181857",
+      "Q20725",
+      "Q2155419",
+      "Q2155423",
+      "Q22418090",
+      "Q2360927",
+      "Q2832285",
+      "Q2944766",
+      "Q2995979",
+      "Q3201973",
+      "Q3393516",
+      "Q3462388",
+      "Q3463004",
+      "Q3550645",
+      "Q3554592",
+      "Q3554856",
+      "Q3567224",
+      "Q4215620",
+      "Q437955",
+      "Q4872637",
+      "Q543254",
+      "Q6709272",
+      "Q693090",
+      "Q738848",
+      "Q905710"
+    ],
+    "venue": [
+      "Q1046446",
+      "Q1092360",
+      "Q1093941",
+      "Q1094877",
+      "Q110092495",
+      "Q1126258",
+      "Q1139489",
+      "Q1143666",
+      "Q125942347",
+      "Q12988204",
+      "Q1315374",
+      "Q131552101",
+      "Q1326219",
+      "Q1393350",
+      "Q14874673",
+      "Q14875184",
+      "Q14875273",
+      "Q14875289",
+      "Q1635335",
+      "Q180865",
+      "Q1814534",
+      "Q18683358",
+      "Q201603",
+      "Q2051996",
+      "Q2095595",
+      "Q2338135",
+      "Q242066",
+      "Q2812149",
+      "Q2813519",
+      "Q285467",
+      "Q2859695",
+      "Q2982693",
+      "Q2996437",
+      "Q3137221",
+      "Q3323401",
+      "Q3363755",
+      "Q3363774",
+      "Q3527548",
+      "Q3700321",
+      "Q3891105",
+      "Q391028",
+      "Q392189",
+      "Q406972",
+      "Q44927724",
+      "Q4646398",
+      "Q4808913",
+      "Q4956249",
+      "Q5092482",
+      "Q522282",
+      "Q5472429",
+      "Q5498056",
+      "Q5691682",
+      "Q593199",
+      "Q600226",
+      "Q60685961",
+      "Q60686103",
+      "Q6386535",
+      "Q649250",
+      "Q7138836",
+      "Q7160209",
+      "Q7269642",
+      "Q745964",
+      "Q7586852",
+      "Q7698833",
+      "Q820905",
+      "Q832644",
+      "Q9293120",
+      "Q935388",
+      "Q976408",
+      "Q99284950"
+    ]
   }
 }

@@ -4,16 +4,9 @@ export const PRECISION = {
   area: "Area-level record",
   unclassified: "Precision unclassified",
 };
-export function validateCatalogue(data) {
-  if (
-    !data ||
-    data.schema !== "screenplaces.v1" ||
-    !Array.isArray(data.records) ||
-    !Array.isArray(data.regions) ||
-    !Number.isFinite(Date.parse(data.fetched_at))
-  )
-    throw new Error("The location catalogue is not valid.");
-  for (const r of data.records) {
+function validateRecords(records) {
+  if (!Array.isArray(records)) throw new Error("Missing location records.");
+  for (const r of records) {
     if (
       !/^Q\d+@Q\d+$/.test(r.id) ||
       typeof r.title !== "string" ||
@@ -25,7 +18,59 @@ export function validateCatalogue(data) {
     )
       throw new Error("A location record is invalid.");
   }
+  return records;
+}
+export function validateCatalogue(data) {
+  if (
+    !data ||
+    !["screenplaces.v1", "screenplaces.v2"].includes(data.schema) ||
+    !Array.isArray(data.regions) ||
+    !Number.isFinite(Date.parse(data.fetched_at))
+  )
+    throw new Error("The location catalogue is not valid.");
+  if (data.schema === "screenplaces.v1") validateRecords(data.records);
+  else {
+    const ids = new Set();
+    for (const r of data.regions) {
+      if (
+        !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(r.id) ||
+        ids.has(r.id) ||
+        !/^\.\/data\/regions\/[a-z0-9-]+\.json$/.test(r.records_url) ||
+        !Number.isInteger(r.records) ||
+        r.records < 0 ||
+        !Number.isInteger(r.productions) ||
+        r.productions < 0 ||
+        !Number.isInteger(r.places) ||
+        r.places < 0
+      )
+        throw new Error("A regional capture entry is invalid.");
+      ids.add(r.id);
+    }
+    if (
+      !ids.size ||
+      data.total_records !== data.regions.reduce((n, r) => n + r.records, 0)
+    )
+      throw new Error("Regional capture counts do not match.");
+  }
   return data;
+}
+export function validateRegion(data, region, manifest) {
+  if (
+    !data ||
+    data.schema !== "screenplaces.region.v1" ||
+    data.region !== region.id ||
+    data.fetched_at !== manifest.fetched_at
+  )
+    throw new Error(
+      "The region and catalogue capture dates do not match. Reload this page to get the current capture.",
+    );
+  const rows = validateRecords(data.records);
+  if (
+    rows.length !== region.records ||
+    rows.some((r) => r.region !== region.id)
+  )
+    throw new Error("The regional capture is incomplete.");
+  return rows;
 }
 export function filterRecords(
   rows,

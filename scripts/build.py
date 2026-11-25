@@ -76,22 +76,41 @@ def build(root=ROOT):
         if re.search(r"\{\{[A-Z_]+\}\}", page):
             raise ValueError("Unresolved template placeholder in web/index.html")
         snapshot = json.loads((web / "data/catalogue.json").read_text(encoding="utf-8"))
-        if snapshot.get("schema") != "screenplaces.v1" or not isinstance(snapshot.get("records"), list) or not snapshot["records"]:
-            raise ValueError("A valid nonempty filming-location capture is required")
-        if not snapshot.get("fetched_at"):
-            raise ValueError("The capture must retain its retrieval timestamp")
+        if snapshot.get("schema") not in ("screenplaces.v1", "screenplaces.v2") or not snapshot.get("fetched_at"):
+            raise ValueError("A valid dated filming-location capture is required")
         regions = snapshot.get("regions", [])
-        summary = ". ".join(f'{r["name"]}: {r["productions"]} productions' for r in regions)
-        page = page.replace('<p id="coverage"></p>', '<p id="coverage">' + escape(summary + '. Captured ' + snapshot["fetched_at"] + '.') + '</p>')
+        if not regions:
+            raise ValueError("Configure at least one captured region")
+        downloads = []
+        if snapshot["schema"] == "screenplaces.v2":
+            total = 0
+            for region in regions:
+                route = region.get("records_url", "")
+                if not re.fullmatch(r"\./data/regions/[a-z0-9-]+\.json", route):
+                    raise ValueError("Invalid regional capture path")
+                part = json.loads((web / route[2:]).read_text(encoding="utf-8"))
+                if part.get("schema") != "screenplaces.region.v1" or part.get("region") != region["id"] or part.get("fetched_at") != snapshot["fetched_at"] or len(part.get("records", [])) != region["records"]:
+                    raise ValueError("A regional capture is missing, incomplete or from another date")
+                total += region["records"]
+                downloads.append((region["name"], route))
+            if total != snapshot.get("total_records"):
+                raise ValueError("Regional counts do not match the catalogue")
+        else:
+            total = len(snapshot.get("records", []))
+            downloads = [("Full location capture", "./data/catalogue.json")]
+        summary = f'{len(regions)} geographic collections; {total} production-location statements. Captured {snapshot["fetched_at"]}.'
+        page = page.replace('<p id="coverage"></p>', '<p id="coverage">' + escape(summary) + '</p>')
+        download_html = '<details><summary>Download regional source captures</summary><ul>' + ''.join('<li><a href="' + escape(url, quote=True) + '">' + escape(name) + '</a></li>' for name, url in downloads) + '</ul></details>'
+        page = page.replace('<!-- REGIONAL_DOWNLOADS -->', download_html)
         datasets = []
         if on_coolcode:
             datasets.append({"@type":"Dataset", "@id":f'https://coolcode.ca/{slug}/#locations',
-                "name": "Documented filming-location capture", "description": f'{len(snapshot["records"])} production-location statements from Wikidata; captured {snapshot["fetched_at"]}. Coverage is incomplete.',
+                "name": "Documented filming-location capture", "description": f'{total} production-location statements from Wikidata; captured {snapshot["fetched_at"]}. Coverage is incomplete.',
                 "license":"https://creativecommons.org/publicdomain/zero/1.0/",
                 "creator":{"@type":"Organization","name":"Wikidata contributors","url":"https://www.wikidata.org/"},
                 "isBasedOn":"https://www.wikidata.org/wiki/Property:P915",
                 "spatialCoverage":[{"@type":"Place","name":r["name"]} for r in regions],
-                "distribution":{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":f'https://coolcode.ca/{slug}/data/catalogue.json'}})
+                "distribution":[{"@type":"DataDownload","name":name,"encodingFormat":"application/json","contentUrl":f'https://coolcode.ca/{slug}/'+url[2:]} for name,url in downloads]})
         page = add_search_metadata(page, tool, category="EntertainmentApplication", datasets=datasets)
         index.write_text(page, encoding="utf-8")
         (stage / ".nojekyll").touch()

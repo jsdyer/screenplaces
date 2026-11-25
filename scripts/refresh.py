@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Refresh documented Wikidata filming statements atomically; preserve good data on failure."""
-import argparse, datetime as dt, json, math, re, time, urllib.parse, urllib.request
+import argparse, datetime as dt, hashlib, json, math, re, tempfile, time, urllib.parse, urllib.request
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 UA='CoolCode-Screenplaces/1.0 (+https://coolcode.ca/screenplaces/; public filming-location catalogue)'
@@ -83,19 +83,47 @@ def collect(config,cached=None):
         bindings=raw.get('results',{}).get('bindings')
         if bindings is None or len(bindings)>=limit:raise ValueError('Source results missing or truncated; increase result_limit or narrow bounds')
         rows=normalize(bindings,region,config)
-        if not rows:raise ValueError('A configured region returned no records; inspect source before replacing good data')
-        allrows.extend(rows);coverage.append({**region,'records':len(rows),'productions':len({r['work_id'] for r in rows})})
+        if not rows and not region.get('allow_empty',False):raise ValueError('A configured region returned no records; inspect source before replacing good data')
+        allrows.extend(rows);coverage.append({**region,'records':len(rows),'productions':len({r['work_id'] for r in rows}),'places':len({r['place_id'] for r in rows})})
     fill_missing_labels(allrows)
     years=release_years(r['work_id'] for r in allrows)
     for row in allrows:row['year']=years.get(row['work_id'])
     now=dt.datetime.now(dt.timezone.utc).isoformat().replace('+00:00','Z')
     return {'schema':'screenplaces.v1','fetched_at':now,'source':'Wikidata P915 (filming location), P625 (coordinates), P577 (earliest listed release date)','licence':'CC0','regions':coverage,'records':sorted(allrows,key=lambda r:(r['title'].casefold(),r['place']))}
 
+def publish_partitioned(snapshot, web):
+    """Write versioned region files first, then atomically switch the manifest."""
+    folder=web/'data';regions_folder=folder/'regions';regions_folder.mkdir(parents=True,exist_ok=True)
+    manifest={k:v for k,v in snapshot.items() if k!='records'}
+    manifest['schema']='screenplaces.v2';manifest['total_records']=len(snapshot['records']);manifest['regions']=[]
+    files={}
+    for region in snapshot['regions']:
+        if not re.fullmatch(r'[a-z0-9]+(?:-[a-z0-9]+)*',region['id']):raise ValueError('Invalid region ID')
+        rows=[r for r in snapshot['records'] if r['region']==region['id']]
+        payload={'schema':'screenplaces.region.v1','fetched_at':snapshot['fetched_at'],'region':region['id'],'records':rows}
+        blob=(json.dumps(payload,ensure_ascii=False,separators=(',',':'))+'\n').encode('utf8')
+        digest=hashlib.sha256(blob).hexdigest()[:12];name=region['id']+'-'+digest+'.json';files[name]=blob
+        manifest['regions'].append({**region,'records_url':'./data/regions/'+name})
+    if not manifest['regions'] or len({r['id']for r in manifest['regions']})!=len(manifest['regions']):raise ValueError('Region IDs must be present and unique')
+    # A failed write cannot change a file referenced by the currently published manifest.
+    with tempfile.TemporaryDirectory(prefix='screenplaces-capture-')as tmp:
+        staged=Path(tmp)
+        for name,blob in files.items():(staged/name).write_bytes(blob)
+        encoded=json.dumps(manifest,ensure_ascii=False,indent=2)+'\n'
+        for name in files:
+            target=regions_folder/name
+            if not target.exists():target.write_bytes((staged/name).read_bytes())
+        target=folder/'catalogue.json';pending=target.with_suffix('.json.tmp');pending.write_text(encoded,encoding='utf8');pending.replace(target)
+    for old in regions_folder.glob('*.json'):
+        if old.name not in files:old.unlink()
+    return manifest
+
+
 def main():
     parser=argparse.ArgumentParser();parser.add_argument('--cached-inputs',help='Directory of already retrieved raw region responses, for initial import');args=parser.parse_args()
     config=json.loads((ROOT/'web/config.json').read_text());cached=None
     if args.cached_inputs:cached={r['id']:json.loads((Path(args.cached_inputs)/('screenplaces-'+r['id']+'-locations.json')).read_text()) for r in config['regions']}
-    snapshot=collect(config,cached);target=ROOT/'web/data/catalogue.json';target.parent.mkdir(parents=True,exist_ok=True)
-    stage=target.with_suffix('.json.tmp');stage.write_text(json.dumps(snapshot,ensure_ascii=False,indent=2)+'\n');stage.replace(target)
+    snapshot=collect(config,cached)
+    publish_partitioned(snapshot,ROOT/'web')
     print('Published',len(snapshot['records']),'location statements at',snapshot['fetched_at'])
 if __name__=='__main__':main()

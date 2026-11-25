@@ -1,6 +1,7 @@
 import {
   PRECISION,
   validateCatalogue,
+  validateRegion,
   filterRecords,
   groupPlaces,
   liveQuery,
@@ -12,6 +13,8 @@ const $ = (s) => document.querySelector(s),
   key = "coolcode:screenplaces:saved";
 const state = {
   catalogue: null,
+  loaded: new Map(),
+  regionRequest: 0,
   config: null,
   saved: [],
   custom: [],
@@ -61,7 +64,9 @@ async function json(url, timeout = 25000) {
 function rows() {
   return $("#region").value === "custom"
     ? state.custom
-    : state.catalogue?.records || [];
+    : state.catalogue?.schema === "screenplaces.v1"
+      ? state.catalogue.records
+      : state.loaded.get($("#region").value) || [];
 }
 function active() {
   return filterRecords(rows(), {
@@ -240,7 +245,13 @@ function render() {
         );
         return;
       }
-      state.saved.push(r);
+      state.saved.push({
+        ...r,
+        captured_at:
+          $("#region").value === "custom"
+            ? state.customFetchedISO
+            : state.catalogue.fetched_at,
+      });
       persist();
     };
     actions.append(map, details, save, link("Filming statement", r.source_url));
@@ -251,7 +262,9 @@ function render() {
     target.append(
       el(
         "p",
-        "No records match these filters. Try another collection, remove a filter or search another Wikidata place.",
+        rows().length
+          ? "No records match these filters. Try another collection, remove a filter or search another Wikidata place."
+          : "This capture has no geotagged filming statements for the selected area. That is a Wikidata coverage gap, not evidence that nothing was filmed here. Try another collection or an exact place search.",
         "empty",
       ),
     );
@@ -340,14 +353,61 @@ $("#close-details").onclick = () => {
 };
 $("#details").addEventListener("cancel", () => state.detailRequest++);
 $("#region").onchange = () => {
+  state.liveRequest++;
   resetFilters();
-  const region = state.catalogue.regions.find(
-    (r) => r.id === $("#region").value,
-  );
-  if (region)
-    state.map?.setView(region.center, region.id === "vancouver" ? 10 : 11);
-  updateSource();
+  loadRegion($("#region").value);
 };
+function updateDecades() {
+  const select = $("#decade");
+  select.replaceChildren(new Option("All years", ""));
+  const decades = [
+    ...new Set(
+      rows()
+        .filter((r) => r.year)
+        .map((r) => Math.floor(r.year / 10) * 10),
+    ),
+  ].sort((a, b) => b - a);
+  for (const d of decades) select.add(new Option(d + "s", String(d)));
+}
+async function loadRegion(id) {
+  const token = ++state.regionRequest;
+  if (id === "custom") {
+    updateDecades();
+    render();
+    updateSource();
+    return;
+  }
+  const region = state.catalogue.regions.find((r) => r.id === id);
+  if (!region) return;
+  state.map?.setView(region.center, id === "vancouver" ? 10 : 11);
+  if (state.catalogue.schema === "screenplaces.v2" && !state.loaded.has(id)) {
+    status(`Loading ${region.name}…`);
+    $("#results").replaceChildren(
+      el("p", "Loading this regional capture…", "empty"),
+    );
+    try {
+      const data = await json(region.records_url);
+      const records = validateRegion(data, region, state.catalogue);
+      state.loaded.set(id, records);
+    } catch (e) {
+      if (token === state.regionRequest) {
+        status(`Could not load ${region.name}: ${e.message}`, true);
+        $("#results").replaceChildren(
+          el(
+            "p",
+            "This regional capture could not load. Choose another collection or reload to retry.",
+            "empty",
+          ),
+        );
+      }
+      return;
+    }
+  }
+  if (token !== state.regionRequest) return;
+  updateDecades();
+  render();
+  updateSource();
+}
 for (const name of ["query", "precision", "type", "decade"])
   $("#" + name).addEventListener(name === "query" ? "input" : "change", () => {
     state.shown = 40;
@@ -411,6 +471,7 @@ $("#place-form").onsubmit = async (e) => {
   }
 };
 async function explorePlace(qid, label) {
+  state.regionRequest++;
   const request = ++state.liveRequest;
   status(
     `Looking up filming statements for ${label}. This can take a few moments…`,
@@ -432,7 +493,8 @@ async function explorePlace(qid, label) {
       state.config.result_limit,
     );
     state.customName = label;
-    state.customFetched = new Date().toLocaleString();
+    state.customFetchedISO = new Date().toISOString();
+    state.customFetched = new Date(state.customFetchedISO).toLocaleString();
     let option = $('#region option[value="custom"]');
     if (!option) {
       option = new Option(label, "custom");
@@ -442,6 +504,7 @@ async function explorePlace(qid, label) {
     $("#region").value = "custom";
     $("#place-options").replaceChildren();
     resetFilters();
+    updateDecades();
     updateSource();
     if (state.custom[0])
       state.map?.setView([state.custom[0].lat, state.custom[0].lon], 11);
@@ -466,7 +529,7 @@ $("#export").onclick = () => {
           {
             application: "Screen Places",
             exported_at: new Date().toISOString(),
-            source_capture: state.catalogue.fetched_at,
+            catalogue_capture: state.catalogue.fetched_at,
             locations: state.saved,
           },
           null,
@@ -491,25 +554,23 @@ async function init() {
     ]);
     state.config = config;
     state.catalogue = validateCatalogue(data);
-    for (const r of data.regions) $("#region").add(new Option(r.name, r.id));
-    const decades = [
-      ...new Set(
-        data.records
-          .filter((r) => r.year)
-          .map((r) => Math.floor(r.year / 10) * 10),
-      ),
-    ].sort((a, b) => b - a);
-    for (const d of decades) $("#decade").add(new Option(d + "s", String(d)));
+    const groups = new Map();
+    for (const r of data.regions) {
+      const label = r.group || "Collections";
+      if (!groups.has(label)) {
+        const group = el("optgroup");
+        group.label = label;
+        groups.set(label, group);
+        $("#region").append(group);
+      }
+      groups
+        .get(label)
+        .append(new Option(`${r.name} (${r.productions})`, r.id));
+    }
     $("#coverage").textContent =
-      data.regions
-        .map(
-          (r) =>
-            `${r.name}: ${r.productions} productions across ${new Set(data.records.filter((p) => p.region === r.id).map((p) => p.place_id)).size} recorded places`,
-        )
-        .join(". ") + ". ";
+      `${data.regions.length} geographic collections are checked. Counts in the selector show productions, and zero means no matching Wikidata statements were found in that capture. Each regional file loads only when selected.`;
     initMap();
-    render();
-    updateSource();
+    await loadRegion($("#region").value);
   } catch (e) {
     status(`Could not load the catalogue: ${e.message}`, true);
   }

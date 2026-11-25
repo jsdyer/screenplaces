@@ -22,7 +22,9 @@ def main():
     page.reload();page.locator('.card').first.wait_for();assert page.locator('#saved-list li').count()==1
     page.locator('#precision').select_option('venue');assert page.locator('.card').count()>0;assert page.locator('.card:not(.venue)').count()==0
     page.locator('.card button',has_text='Film details').first.click();page.get_by_text('Film details test response',exact=True).wait_for();page.locator('#close-details').click()
-    page.locator('#region').select_option('halifax');assert 'Halifax' in page.locator('#status').inner_text()
+    page.locator('#region').select_option('toronto');page.locator('.card').first.wait_for();assert 'Toronto' in page.locator('#status').inner_text()
+    page.locator('#region').select_option('truro');page.get_by_text('This capture has no geotagged filming statements for the selected area.',exact=False).wait_for();assert page.locator('.card').count()==0
+    page.locator('#region').select_option('halifax');page.locator('.card').first.wait_for();assert 'Halifax' in page.locator('#status').inner_text()
     page.screenshot(path=str(shots/'desktop.png'),full_page=True);page.set_viewport_size({'width':390,'height':844});assert page.evaluate('document.documentElement.scrollWidth<=innerWidth');page.screenshot(path=str(shots/'mobile.png'),full_page=True)
     assert not errors,errors;browser.close()
   finally:server.shutdown()
