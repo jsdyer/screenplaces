@@ -1,6 +1,6 @@
 {
   "schema": "screenplaces.v2",
-  "fetched_at": "2026-11-26T11:39:52.392087Z",
+  "fetched_at": "2026-11-26T19:14:18.433989Z",
   "source": "Wikidata P915 (filming location), P625 (coordinates), P577 (earliest listed release date)",
   "licence": "CC0",
   "regions": [
@@ -22,7 +22,7 @@
       "records": 674,
       "productions": 626,
       "places": 27,
-      "records_url": "./data/regions/vancouver-bd4998077ab0.json"
+      "records_url": "./data/regions/vancouver-541eac4c2ab4.json"
     },
     {
       "id": "victoria",
@@ -42,7 +42,7 @@
       "records": 7,
       "productions": 7,
       "places": 1,
-      "records_url": "./data/regions/victoria-6cebaf1493be.json"
+      "records_url": "./data/regions/victoria-a37ffabf9e93.json"
     },
     {
       "id": "nanaimo",
@@ -62,7 +62,7 @@
       "records": 1,
       "productions": 1,
       "places": 1,
-      "records_url": "./data/regions/nanaimo-05b71282e8a7.json"
+      "records_url": "./data/regions/nanaimo-f0be4ea2e4b5.json"
     },
     {
       "id": "sea-to-sky",
@@ -82,7 +82,7 @@
       "records": 2,
       "productions": 2,
       "places": 2,
-      "records_url": "./data/regions/sea-to-sky-aa001eef55bc.json"
+      "records_url": "./data/regions/sea-to-sky-dc60fc56ce47.json"
     },
     {
       "id": "okanagan",
@@ -102,7 +102,7 @@
       "records": 4,
       "productions": 3,
       "places": 3,
-      "records_url": "./data/regions/okanagan-ba214af9da05.json"
+      "records_url": "./data/regions/okanagan-a245d2f81bc2.json"
     },
     {
       "id": "halifax",
@@ -122,7 +122,7 @@
       "records": 9,
       "productions": 9,
       "places": 2,
-      "records_url": "./data/regions/halifax-cef4de6d374b.json"
+      "records_url": "./data/regions/halifax-b58257433ca8.json"
     },
     {
       "id": "south-shore",
@@ -142,7 +142,7 @@
       "records": 3,
       "productions": 2,
       "places": 3,
-      "records_url": "./data/regions/south-shore-21dcaa9f460f.json"
+      "records_url": "./data/regions/south-shore-611508f1b4ae.json"
     },
     {
       "id": "truro",
@@ -163,7 +163,7 @@
       "records": 0,
       "productions": 0,
       "places": 0,
-      "records_url": "./data/regions/truro-54c650118fe2.json"
+      "records_url": "./data/regions/truro-1cc3b42dcacc.json"
     },
     {
       "id": "cape-breton",
@@ -183,7 +183,7 @@
       "records": 1,
       "productions": 1,
       "places": 1,
-      "records_url": "./data/regions/cape-breton-3c4e27320a5c.json"
+      "records_url": "./data/regions/cape-breton-3ac07c8383c0.json"
     },
     {
       "id": "pei",
@@ -204,7 +204,7 @@
       "records": 0,
       "productions": 0,
       "places": 0,
-      "records_url": "./data/regions/pei-d31296f8b4c6.json"
+      "records_url": "./data/regions/pei-a45c6f3c818c.json"
     },
     {
       "id": "saint-john",
@@ -224,7 +224,7 @@
       "records": 3,
       "productions": 3,
       "places": 1,
-      "records_url": "./data/regions/saint-john-612f905b3138.json"
+      "records_url": "./data/regions/saint-john-a784335f333e.json"
     },
     {
       "id": "fredericton",
@@ -245,7 +245,7 @@
       "records": 0,
       "productions": 0,
       "places": 0,
-      "records_url": "./data/regions/fredericton-84aec2199474.json"
+      "records_url": "./data/regions/fredericton-51c3b4224136.json"
     },
     {
       "id": "st-johns",
@@ -265,7 +265,7 @@
       "records": 5,
       "productions": 5,
       "places": 2,
-      "records_url": "./data/regions/st-johns-a95389e847fb.json"
+      "records_url": "./data/regions/st-johns-089f033e4e1f.json"
     },
     {
       "id": "toronto",
@@ -285,7 +285,7 @@
       "records": 544,
       "productions": 495,
       "places": 51,
-      "records_url": "./data/regions/toronto-0c416fc54835.json"
+      "records_url": "./data/regions/toronto-de62e81db7d0.json"
     },
     {
       "id": "montreal",
@@ -305,7 +305,7 @@
       "records": 470,
       "productions": 445,
       "places": 35,
-      "records_url": "./data/regions/montreal-03abe229c1c0.json"
+      "records_url": "./data/regions/montreal-6f249e91a8f3.json"
     },
     {
       "id": "quebec-city",
@@ -325,7 +325,7 @@
       "records": 24,
       "productions": 20,
       "places": 10,
-      "records_url": "./data/regions/quebec-city-3cefb1f9ab79.json"
+      "records_url": "./data/regions/quebec-city-2fa46b94a4a0.json"
     },
     {
       "id": "ottawa",
@@ -345,7 +345,7 @@
       "records": 40,
       "productions": 37,
       "places": 6,
-      "records_url": "./data/regions/ottawa-348826b7ce15.json"
+      "records_url": "./data/regions/ottawa-150230e9fc11.json"
     },
     {
       "id": "winnipeg",
@@ -365,7 +365,7 @@
       "records": 28,
       "productions": 26,
       "places": 4,
-      "records_url": "./data/regions/winnipeg-55274103013b.json"
+      "records_url": "./data/regions/winnipeg-daccf66314d2.json"
     },
     {
       "id": "calgary",
@@ -385,7 +385,7 @@
       "records": 22,
       "productions": 22,
       "places": 2,
-      "records_url": "./data/regions/calgary-6baf3f203460.json"
+      "records_url": "./data/regions/calgary-be540338cec3.json"
     },
     {
       "id": "edmonton",
@@ -405,7 +405,7 @@
       "records": 12,
       "productions": 12,
       "places": 3,
-      "records_url": "./data/regions/edmonton-129976ed9401.json"
+      "records_url": "./data/regions/edmonton-60d336956346.json"
     }
   ],
   "total_records": 1849
