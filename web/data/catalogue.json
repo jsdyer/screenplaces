@@ -1,6 +1,6 @@
 {
   "schema": "screenplaces.v2",
-  "fetched_at": "2026-11-25T11:52:03.743579Z",
+  "fetched_at": "2026-11-26T11:39:52.392087Z",
   "source": "Wikidata P915 (filming location), P625 (coordinates), P577 (earliest listed release date)",
   "licence": "CC0",
   "regions": [
@@ -22,7 +22,7 @@
       "records": 674,
       "productions": 626,
       "places": 27,
-      "records_url": "./data/regions/vancouver-11c03e372352.json"
+      "records_url": "./data/regions/vancouver-bd4998077ab0.json"
     },
     {
       "id": "victoria",
@@ -39,11 +39,10 @@
         48.7
       ],
       "group": "British Columbia",
-      "allow_empty": true,
       "records": 7,
       "productions": 7,
       "places": 1,
-      "records_url": "./data/regions/victoria-7aac767903b7.json"
+      "records_url": "./data/regions/victoria-6cebaf1493be.json"
     },
     {
       "id": "nanaimo",
@@ -60,11 +59,10 @@
         49.5
       ],
       "group": "British Columbia",
-      "allow_empty": true,
       "records": 1,
       "productions": 1,
       "places": 1,
-      "records_url": "./data/regions/nanaimo-4fc8a9af8e63.json"
+      "records_url": "./data/regions/nanaimo-05b71282e8a7.json"
     },
     {
       "id": "sea-to-sky",
@@ -81,11 +79,10 @@
         50.3
       ],
       "group": "British Columbia",
-      "allow_empty": true,
       "records": 2,
       "productions": 2,
       "places": 2,
-      "records_url": "./data/regions/sea-to-sky-8eb47a0f6e01.json"
+      "records_url": "./data/regions/sea-to-sky-aa001eef55bc.json"
     },
     {
       "id": "okanagan",
@@ -102,11 +99,10 @@
         50.3
       ],
       "group": "British Columbia",
-      "allow_empty": true,
       "records": 4,
       "productions": 3,
       "places": 3,
-      "records_url": "./data/regions/okanagan-6cd7704a5d2a.json"
+      "records_url": "./data/regions/okanagan-ba214af9da05.json"
     },
     {
       "id": "halifax",
@@ -126,7 +122,7 @@
       "records": 9,
       "productions": 9,
       "places": 2,
-      "records_url": "./data/regions/halifax-1014c6057a14.json"
+      "records_url": "./data/regions/halifax-cef4de6d374b.json"
     },
     {
       "id": "south-shore",
@@ -143,11 +139,10 @@
         44.7
       ],
       "group": "Nova Scotia",
-      "allow_empty": true,
       "records": 3,
       "productions": 2,
       "places": 3,
-      "records_url": "./data/regions/south-shore-94cc653d26a7.json"
+      "records_url": "./data/regions/south-shore-21dcaa9f460f.json"
     },
     {
       "id": "truro",
@@ -168,7 +163,7 @@
       "records": 0,
       "productions": 0,
       "places": 0,
-      "records_url": "./data/regions/truro-dbd73f67e312.json"
+      "records_url": "./data/regions/truro-54c650118fe2.json"
     },
     {
       "id": "cape-breton",
@@ -185,11 +180,10 @@
         47.1
       ],
       "group": "Nova Scotia",
-      "allow_empty": true,
       "records": 1,
       "productions": 1,
       "places": 1,
-      "records_url": "./data/regions/cape-breton-6fa16e96d8f8.json"
+      "records_url": "./data/regions/cape-breton-3c4e27320a5c.json"
     },
     {
       "id": "pei",
@@ -210,7 +204,7 @@
       "records": 0,
       "productions": 0,
       "places": 0,
-      "records_url": "./data/regions/pei-e8a70b7a7c9f.json"
+      "records_url": "./data/regions/pei-d31296f8b4c6.json"
     },
     {
       "id": "saint-john",
@@ -227,11 +221,10 @@
         45.6
       ],
       "group": "Other Atlantic Canada",
-      "allow_empty": true,
       "records": 3,
       "productions": 3,
       "places": 1,
-      "records_url": "./data/regions/saint-john-d7cd758abf3f.json"
+      "records_url": "./data/regions/saint-john-612f905b3138.json"
     },
     {
       "id": "fredericton",
@@ -252,7 +245,7 @@
       "records": 0,
       "productions": 0,
       "places": 0,
-      "records_url": "./data/regions/fredericton-03d6b4a86919.json"
+      "records_url": "./data/regions/fredericton-84aec2199474.json"
     },
     {
       "id": "st-johns",
@@ -269,11 +262,10 @@
         48.0
       ],
       "group": "Other Atlantic Canada",
-      "allow_empty": true,
       "records": 5,
       "productions": 5,
       "places": 2,
-      "records_url": "./data/regions/st-johns-5c6d19d42e6f.json"
+      "records_url": "./data/regions/st-johns-a95389e847fb.json"
     },
     {
       "id": "toronto",
@@ -290,11 +282,10 @@
         44.1
       ],
       "group": "Ontario & Quebec",
-      "allow_empty": true,
       "records": 544,
       "productions": 495,
       "places": 51,
-      "records_url": "./data/regions/toronto-2ced02ddde00.json"
+      "records_url": "./data/regions/toronto-0c416fc54835.json"
     },
     {
       "id": "montreal",
@@ -311,11 +302,10 @@
         45.8
       ],
       "group": "Ontario & Quebec",
-      "allow_empty": true,
       "records": 470,
       "productions": 445,
       "places": 35,
-      "records_url": "./data/regions/montreal-5eac27d3fd0f.json"
+      "records_url": "./data/regions/montreal-03abe229c1c0.json"
     },
     {
       "id": "quebec-city",
@@ -332,11 +322,10 @@
         47.1
       ],
       "group": "Ontario & Quebec",
-      "allow_empty": true,
       "records": 24,
       "productions": 20,
       "places": 10,
-      "records_url": "./data/regions/quebec-city-74c85a66c58f.json"
+      "records_url": "./data/regions/quebec-city-3cefb1f9ab79.json"
     },
     {
       "id": "ottawa",
@@ -353,11 +342,10 @@
         45.7
       ],
       "group": "Ontario & Quebec",
-      "allow_empty": true,
       "records": 40,
       "productions": 37,
       "places": 6,
-      "records_url": "./data/regions/ottawa-c206f54818c8.json"
+      "records_url": "./data/regions/ottawa-348826b7ce15.json"
     },
     {
       "id": "winnipeg",
@@ -374,11 +362,10 @@
         50.1
       ],
       "group": "Prairies",
-      "allow_empty": true,
       "records": 28,
       "productions": 26,
       "places": 4,
-      "records_url": "./data/regions/winnipeg-f2764d0c2061.json"
+      "records_url": "./data/regions/winnipeg-55274103013b.json"
     },
     {
       "id": "calgary",
@@ -395,11 +382,10 @@
         51.3
       ],
       "group": "Prairies",
-      "allow_empty": true,
       "records": 22,
       "productions": 22,
       "places": 2,
-      "records_url": "./data/regions/calgary-3dec8974ec46.json"
+      "records_url": "./data/regions/calgary-6baf3f203460.json"
     },
     {
       "id": "edmonton",
@@ -416,11 +402,10 @@
         53.8
       ],
       "group": "Prairies",
-      "allow_empty": true,
       "records": 12,
       "productions": 12,
       "places": 3,
-      "records_url": "./data/regions/edmonton-c6411b9b94e6.json"
+      "records_url": "./data/regions/edmonton-129976ed9401.json"
     }
   ],
   "total_records": 1849
